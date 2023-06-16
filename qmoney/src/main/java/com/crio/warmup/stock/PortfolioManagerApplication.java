@@ -265,7 +265,7 @@ public class PortfolioManagerApplication {
     double totalReturn = (sellPrice - buyPrice) / buyPrice;
 
     long daysBetween = ChronoUnit.DAYS.between(trade.getPurchaseDate(), endDate);
-    double years = daysBetween / 365.24;
+    double years = daysBetween / 365.25;
 
     double annualizedReturns = Math.pow(1 + totalReturn, 1 / years) - 1;
 
