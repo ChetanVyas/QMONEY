@@ -244,6 +244,7 @@ public class PortfolioManagerApplication {
       annualizedReturnsList.add(calculateAnnualizedReturns(endDate, trade, buyPrice, sellPrice));
     }
 
+    Collections.sort(annualizedReturnsList);
     return annualizedReturnsList;
   }
 
@@ -264,8 +265,7 @@ public class PortfolioManagerApplication {
 
     double totalReturn = (sellPrice - buyPrice) / buyPrice;
 
-    long daysBetween = ChronoUnit.DAYS.between(trade.getPurchaseDate(), endDate);
-    double years = daysBetween / 365.25;
+    double years = trade.getPurchaseDate().until(endDate, ChronoUnit.DAYS)/365.24;
 
     double annualizedReturns = Math.pow(1 + totalReturn, 1 / years) - 1;
 
