@@ -1,7 +1,7 @@
 
 package com.crio.warmup.stock.dto;
 
-public class AnnualizedReturn implements Comparable<AnnualizedReturn>{
+public class AnnualizedReturn implements Comparable<AnnualizedReturn> {
 
   private final String symbol;
   private final Double annualizedReturn;
