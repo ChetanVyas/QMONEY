@@ -64,7 +64,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   @Override
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades,
-      LocalDate endDate) throws JsonProcessingException {
+      LocalDate endDate) {
 
     // calculate annualized return for all stocks
     List<AnnualizedReturn> annualizedReturnsList = new ArrayList<>();
