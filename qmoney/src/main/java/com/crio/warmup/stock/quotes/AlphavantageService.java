@@ -94,9 +94,17 @@ public class AlphavantageService implements StockQuotesService {
   protected String buildUri(String symbol) {
     String uriTemplate =
         "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=" + symbol
-            + "&outputsize=full&apikey= " + apiKey;
+            + "&outputsize=full&apikey=" + apiKey;
     return uriTemplate;
   }
+
+  // public static void main(String[] args) throws JsonProcessingException {
+  //   RestTemplate restTemplate = new RestTemplate();
+  //   AlphavantageService service = new AlphavantageService(restTemplate);
+  //   System.out.println(service.buildUri("AAPL"));
+  //   service.getStockQuote("AAPL", LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-05"))
+  //   .forEach(candle -> System.out.println(candle.getOpen()));
+  // }
 }
 
 // https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&outputsize=full&apikey=9DNICBKJGHJ3TVL0

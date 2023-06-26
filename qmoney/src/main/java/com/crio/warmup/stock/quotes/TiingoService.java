@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.ObjectInputStream.GetField;
 // import com.fasterxml.jackson.databind.ObjectMapper;
 // import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
@@ -66,5 +67,16 @@ public class TiingoService implements StockQuotesService {
         + startDate.toString() + "&endDate=" + endDate.toString() + "&token=" + apiKey;
     return uriTemplate;
   }
+
+
+
+
+  // public static void main(String[] args) throws JsonProcessingException {
+  //   RestTemplate restTemplate = new RestTemplate();
+  //   TiingoService service = new TiingoService(restTemplate);
+  //   System.out.println(service.buildUri("AAPL", LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-05")));
+  //   service.getStockQuote("AAPL", LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-05"))
+  //   .forEach(candle -> System.out.println(candle.getDate()));
+  // }
 
 }
