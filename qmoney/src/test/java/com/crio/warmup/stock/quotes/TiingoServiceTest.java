@@ -10,12 +10,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 
 import com.crio.warmup.stock.dto.Candle;
-import com.fasterxml.jackson.core.JsonProcessingException;
+// import com.fasterxml.jackson.core.JsonProcessingException;
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Collections;
+// import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+// import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -72,7 +72,7 @@ class TiingoServiceTest {
 
     ArgumentCaptor<URI> urlCaptorAsUri = ArgumentCaptor.forClass(URI.class);
     Mockito.verify(restTemplate, atLeast(0))
-        .getForObject(urlCaptorAsUri.capture(), any(Class.class));
+        .getForObject(urlCaptorAsUri.capture(), any());
 
     List<String> propertyKeyValues = urlCaptor.getAllValues();
     List<String> propertyKeyValues2 = urlCaptorWithMap.getAllValues();

@@ -1,13 +1,14 @@
 
 package com.crio.warmup.stock.portfolio;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.SECONDS;
+// import static java.time.temporal.ChronoUnit.DAYS;
+// import static java.time.temporal.ChronoUnit.SECONDS;
 
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
-import com.crio.warmup.stock.dto.TiingoCandle;
+// import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.crio.warmup.stock.quotes.StockQuotesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 // import com.crio.warmup.stock.quotes.StockQuotesService;
@@ -38,31 +39,36 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   // TODO: CRIO_TASK_MODULE_REFACTOR
-  // 1. Now we want to convert our code into a module, so we will not call it from main anymore.
-  // Copy your code from Module#3 PortfolioManagerApplication#calculateAnnualizedReturn
-  // into #calculateAnnualizedReturn function here and ensure it follows the method signature.
-  // 2. Logic to read Json file and convert them into Objects will not be required further as our
+  // 1. Now we want to convert our code into a module, so we will not call it from
+  // main anymore.
+  // Copy your code from Module#3
+  // PortfolioManagerApplication#calculateAnnualizedReturn
+  // into #calculateAnnualizedReturn function here and ensure it follows the
+  // method signature.
+  // 2. Logic to read Json file and convert them into Objects will not be required
+  // further as our
   // clients will take care of it, going forward.
 
   // Note:
-  // Make sure to exercise the tests inside PortfolioManagerTest using command below:
+  // Make sure to exercise the tests inside PortfolioManagerTest using command
+  // below:
   // ./gradlew test --tests PortfolioManagerTest
 
   // CHECKSTYLE:OFF
 
   @Override
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades,
-      LocalDate endDate) {
+      LocalDate endDate) throws StockQuoteServiceException {
 
     // calculate annualized return for all stocks
     List<AnnualizedReturn> annualizedReturnsList = new ArrayList<>();
     for (PortfolioTrade trade : portfolioTrades) {
 
-      List<Candle> stockCandles =
-          getStockQuote(trade.getSymbol(), trade.getPurchaseDate(), endDate);
+      if (trade.getPurchaseDate().isAfter(endDate))
+        throw new RuntimeException("Invailis End Dates Exception for Stock " + trade.getSymbol() + ", Purchase Date: "
+            + trade.getPurchaseDate());
 
-      if (stockCandles.size() == 0)
-        throw new RuntimeException("Invailis Dates Exception");
+      List<Candle> stockCandles = getStockQuote(trade.getSymbol(), trade.getPurchaseDate(), endDate);
 
       double buyPrice = stockCandles.get(0).getOpen();
       double sellPrice = stockCandles.get(stockCandles.size() - 1).getClose();
@@ -87,7 +93,8 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   // private Comparator<AnnualizedReturn> getComparator() {
-  // return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
+  // return
+  // Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
   // }
 
   // CHECKSTYLE:OFF
@@ -96,13 +103,11 @@ public class PortfolioManagerImpl implements PortfolioManager {
   // Extract the logic to call Tiingo third-party APIs to a separate function.
   // Remember to fill out the buildUri function and use that.
 
-
-  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) {
+  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws StockQuoteServiceException {
     try {
       return stockQuotesService.getStockQuote(symbol, from, to);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      throw new StockQuoteServiceException("Unable to Parse respone form Stock API", e);
     }
-    return new ArrayList<>();
   }
 }

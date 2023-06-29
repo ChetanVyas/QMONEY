@@ -86,7 +86,7 @@ class AlphavantageServiceTest {
 
     ArgumentCaptor<URI> urlCaptorAsUri = ArgumentCaptor.forClass(URI.class);
     Mockito.verify(restTemplate, atLeast(0))
-        .getForObject(urlCaptorAsUri.capture(), any(Class.class));
+        .getForObject(urlCaptorAsUri.capture(), any());
 
     List<String> propertyKeyValues = urlCaptor.getAllValues();
     List<String> propertyKeyValues2 = urlCaptorWithMap.getAllValues();

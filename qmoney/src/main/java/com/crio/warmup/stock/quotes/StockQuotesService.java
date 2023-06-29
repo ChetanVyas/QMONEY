@@ -1,6 +1,7 @@
 package com.crio.warmup.stock.quotes;
 
 import com.crio.warmup.stock.dto.Candle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.time.LocalDate;
@@ -19,9 +20,21 @@ public interface StockQuotesService {
   // 5. Return a sorted List<Candle> sorted ascending based on Candle#getDate
 
 
-  // CHECKSTYLE:OFF
-  List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonProcessingException;
+  // CHECKSTYLE:OFF 
+
+  // List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
+  //     throws JsonProcessingException;
+
   // CHECKSTYLE:ON
+
+  // TODO: CRIO_TASK_MODULE_EXCEPTIONS
+  //  Change the method signature to throw StockQuoteServiceException
+
+  //CHECKSTYLE:OFF
+
+  List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
+      throws JsonProcessingException, StockQuoteServiceException;
+
+  //CHECKSTYLE:ON
 
 }
