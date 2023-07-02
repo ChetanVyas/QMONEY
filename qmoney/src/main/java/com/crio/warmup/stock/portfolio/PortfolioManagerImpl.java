@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 // import java.util.Comparator;
 import java.util.List;
-// import java.util.concurrent.ExecutionException;
-// import java.util.concurrent.ExecutorService;
-// import java.util.concurrent.Executors;
-// import java.util.concurrent.Future;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 // import java.util.concurrent.TimeUnit;
 // import java.util.stream.Collectors;
 // import org.springframework.web.client.RestTemplate;
@@ -65,8 +66,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
     for (PortfolioTrade trade : portfolioTrades) {
 
       if (trade.getPurchaseDate().isAfter(endDate))
-        throw new RuntimeException("Invailis End Dates Exception for Stock " + trade.getSymbol() + ", Purchase Date: "
-            + trade.getPurchaseDate());
+        throw new RuntimeException(
+            "Invailis End Dates Exception for Stock " + trade.getSymbol() + ", Purchase Date: "
+                + trade.getPurchaseDate());
 
       List<Candle> stockCandles = getStockQuote(trade.getSymbol(), trade.getPurchaseDate(), endDate);
 
@@ -80,12 +82,12 @@ public class PortfolioManagerImpl implements PortfolioManager {
     return annualizedReturnsList;
   }
 
-  protected static AnnualizedReturn calculateAnnualizedReturns(LocalDate endDate,
+  protected AnnualizedReturn calculateAnnualizedReturns(LocalDate endDate,
       PortfolioTrade trade, Double buyPrice, Double sellPrice) {
 
     double totalReturn = (sellPrice - buyPrice) / buyPrice;
 
-    double years = trade.getPurchaseDate().until(endDate, ChronoUnit.DAYS) / 365.24;
+    double years = trade.getPurchaseDate().until(endDate, ChronoUnit.DAYS) / 365.25;
 
     double annualizedReturns = Math.pow(1 + totalReturn, 1 / years) - 1;
 
@@ -107,7 +109,48 @@ public class PortfolioManagerImpl implements PortfolioManager {
     try {
       return stockQuotesService.getStockQuote(symbol, from, to);
     } catch (JsonProcessingException e) {
-      throw new StockQuoteServiceException("Unable to Parse respone form Stock API", e);
+      throw new StockQuoteServiceException("Unable to Parse resposne form Stock API", e);
     }
+  }
+
+  @Override
+  public List<AnnualizedReturn> calculateAnnualizedReturnParallel(List<PortfolioTrade> portfolioTrades,
+      LocalDate endDate, int numThreads) throws InterruptedException, StockQuoteServiceException {
+
+    ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+    List<Future<AnnualizedReturn>> futures = new ArrayList<>();
+
+    for (PortfolioTrade trade : portfolioTrades) {
+
+      if (trade.getPurchaseDate().isAfter(endDate)) {
+        executor.shutdown();
+        throw new RuntimeException(
+            "Invalid End Dates Exception for Stock " + trade.getSymbol() + ", Purchase Date: "
+                + trade.getPurchaseDate());
+      }
+
+      Callable<AnnualizedReturn> task = () -> {
+        List<Candle> stockCandles = getStockQuote(trade.getSymbol(), trade.getPurchaseDate(), endDate);
+        double buyPrice = stockCandles.get(0).getOpen();
+        double sellPrice = stockCandles.get(stockCandles.size() - 1).getClose();
+        return calculateAnnualizedReturns(endDate, trade, buyPrice, sellPrice);
+      };
+
+      futures.add(executor.submit(task));
+    }
+
+    executor.shutdown();
+
+    List<AnnualizedReturn> annualizedReturnsList = new ArrayList<>();
+    for (Future<AnnualizedReturn> future : futures) {
+      try {
+        annualizedReturnsList.add(future.get());
+      } catch (ExecutionException e) {
+        throw new StockQuoteServiceException("Thread ExecutionException: " + e.getMessage(), e);
+      }
+    }
+
+    Collections.sort(annualizedReturnsList);
+    return annualizedReturnsList;
   }
 }

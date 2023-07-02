@@ -1,0 +1,9 @@
+Single Thread Result:
+real    0m15.083s
+user    0m0.381s
+sys     0m0.084s
+
+Multiple Threads Result:
+real    0m11.757s
+user    0m0.363s
+sys     0m0.067s

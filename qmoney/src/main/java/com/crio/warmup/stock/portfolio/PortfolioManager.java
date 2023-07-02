@@ -10,11 +10,13 @@ import java.util.List;
 
 public interface PortfolioManager {
 
-
-  //CHECKSTYLE:OFF
+  // CHECKSTYLE:OFF
 
   List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades,
       LocalDate endDate) throws StockQuoteServiceException;
-      
-}
 
+  List<AnnualizedReturn> calculateAnnualizedReturnParallel(
+      List<PortfolioTrade> portfolioTrades, LocalDate endDate, int numThreads)
+      throws InterruptedException, StockQuoteServiceException;
+
+}
